@@ -1,0 +1,43 @@
+version: '3'
+
+services:
+  zookeeper:
+    image: wurstmeister/zookeeper
+    ports:
+      - "2181:2181"
+  kafka:
+    image: wurstmeister/kafka
+    ports:
+      - "9092"
+    environment:
+      KAFKA_ADVERTISED_HOST_NAME: ${DOCKER_HOST_IP} # must be your IP, run `ipconfig getifaddr en0`
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+  nginx:
+    image: nginx:latest
+    container_name: nginx01
+    ports:
+      - "80:80"
+    volumes:
+      - ./container/nginx/01/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./container/nginx/01/conf.d/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./container/nginx/01/log:/var/log/nginx
+
+  neo4j:
+    container_name: neo4j
+    image: neo4j
+    ports:
+        - 7474:7474
+        - 7687:7687
+    volumes: 
+        - neo4j-data:/data
+        - neo4j-logs:/logs
+        - neo4j-conf:/conf
+    environment:
+        - NEO4J_AUTH=neo4j/neo4jj
+
+volumes:
+  neo4j-data:
+  neo4j-logs:
+  neo4j-conf:
