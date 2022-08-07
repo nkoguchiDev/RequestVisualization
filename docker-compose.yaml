@@ -1,25 +1,31 @@
 version: '3'
 
 services:
+  api:
+    container_name: FastAPI
+    build: ./api
+    ports:
+      - "80:80"
+    volumes:
+      - ./api/app:/app
   nginx:
     image: nginx:latest
     container_name: nginx01
     ports:
-      - "80:80"
+      - "8080:8080"
     volumes:
       - ./container/nginx/01/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./container/nginx/01/conf.d/default.conf:/etc/nginx/conf.d/default.conf:ro
       - ./container/nginx/01/log:/var/log/nginx
   fluentd:
-    image: fluent/fluentd:latest
+    image: fluent/fluentd:v1.15.0-1.0
     ports:
       - 24224:24224
-    # environment:
-    #   - 'FLUENTD_CONF=fluentd.conf'
     volumes:
       - ./container/fluentd/01/fluent.conf:/fluentd/etc/fluent.conf
-      - ./container/nginx/01/log:/var/log/nginx
       - ./container/fluentd/01/log:/var/log/fluent
+      - ./container/nginx/01/log:/var/log/nginx
+
 
 #   neo4j:
 #     container_name: neo4j
