@@ -1,3 +1,5 @@
+import json
+
 from tokenize import String
 from typing import List
 
@@ -18,9 +20,12 @@ class Item(BaseModel):
     agent: str
     XFF: str
     req_id: str
+    component: str
 
 
 @app.post("/")
-def update_item(item: str = Body(...)):
-    print(item)
-    return item
+def update_item(logs: str = Body(...)):
+    logs = logs.split("\n")
+    logs = [json.loads(i) for i in logs if i]
+    print(logs)
+    return logs
